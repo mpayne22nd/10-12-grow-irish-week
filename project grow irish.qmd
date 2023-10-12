@@ -63,3 +63,15 @@ select_res3 <- dbFetch(select_q3)
 dbClearResult(select_q)
 ```
 
+```{r}
+ library(ggplot2)
+ratingsplot <- ggplot(data = select_res, aes(x = Title, y = `Average Rating`))+
+  geom_bar(stat = "identity")+
+  coord_flip() +
+  labs(title = "Average Ratings per Book" ,
+       x = " " ,
+       y = "Rating")+
+  theme_minimal()
+ratingsplot
+```
+
