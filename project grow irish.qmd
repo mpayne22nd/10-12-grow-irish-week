@@ -1,0 +1,65 @@
+---
+title: "Book Reivews"
+format:
+  html:
+    toc: true
+    toc-location: left
+    theme: vapor
+    self-contained: true
+---
+```{r}
+library(dplyr)
+library(DBI)
+library(dbplyr)
+library(odbc)
+
+odbcListDrivers()
+
+con <- DBI::dbConnect(odbc(),
+                      Driver = "ODBC Driver 17 for SQL Server",
+                      Server = "mcobsql.business.nd.edu",
+                      UID = "MSBAstudent",
+                      PWD = "SQL%database!Mendoza",
+                      Port = 3306, 
+                      Database = "BookReviews")
+
+dbListFields(con, "Books")
+
+dbListFields(con, "Reviews")
+
+select_q <- dbSendQuery(
+  conn = con, 
+  statement = "SELECT b.Title, AVG(r.Rating) as 'Average Rating' FROM Books b INNER JOIN Reviews r ON
+  b.BookID = r.BookID GROUP BY b.Title"
+)
+
+select_res <- dbFetch(select_q)
+
+select_q2 <- dbSendQuery(
+  conn = con,
+statement = "select b.Title 
+      ,count(*) as 'Sex Counter'
+from reviews r 
+inner join books b 
+on b.BookID = r.BookID
+WHERE Headline LIKE '%sex%'
+GROUP BY b.Title"
+)
+
+select_res2 <- dbFetch(select_q2)
+
+select_q3 <- dbSendQuery(
+  conn = con,
+statement = "select b.Title 
+      ,count(*) as 'Number of Reviews'
+from reviews r 
+inner join books b 
+on b.BookID = r.BookID
+GROUP BY b.Title"
+)
+
+select_res3 <- dbFetch(select_q3)
+
+dbClearResult(select_q)
+```
+
